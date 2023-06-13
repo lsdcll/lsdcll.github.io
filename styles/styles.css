@@ -1,8 +1,23 @@
+* {
+    box-sizing: border-box;
+}
+a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, body, canvas, caption, center, cite, code, dd, del, details, dfn, div, dl, dt, em, embed, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, html, i, iframe, img, ins, kbd, label, legend, li, mark, menu, nav, object, ol, output, p, pre, q, ruby, s, samp, section, small, span, strike, strong, sub, summary, sup, table, tbody, td, tfoot, th, thead, time, tr, tt, u, ul, var, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+  }
 body {
     background-color: #f3f1ef;
     font-size: 20px;
     font-family: Rubik, serif;
     font-weight: 400;
+}
+img {
+    vertical-align: middle;
+    border: 0;
 }
 .inner {
     padding: 0 33px;
@@ -20,14 +35,14 @@ header {
 section {
     padding: 80px 0;
 }
-.logoContainer {
+#logoContainer {
     display: flex;
     flex: 0 0 50%;
     justify-content: center;
     width: 100%;
     position:relative;
 }
-.logoContainer img {
+#logoContainer img {
     border-radius: 10%;
     margin: auto;
     width: 350px;
@@ -89,6 +104,43 @@ section {
     border-radius: 50px;
     padding: 50px;
 }
+.skillsGrid {
+    display: grid;
+    list-style: none;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    grid-column-gap: 50px;
+    grid-row-gap: 50px;
+
+    text-align: center;
+    font-family: Rubik, serif;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.skillsGrid li {
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
+    width: 95px;
+    height: 95px;
+    transition: all 0.3s ease-in;
+    box-shadow: 0px 10px 28px rgba(134, 151, 168, 0.5);
+    border: 1px solid #eee;
+}
+.logoContainer {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.logoContainer p {
+    margin-top: 10px;
+}
+.logoContainer img {
+    width: 50px;
+    height: 50px;
+    
+}
 
 
 
@@ -139,6 +191,12 @@ section {
       100%  {
         transform: translate(0, calc(var(--h) * -1px));
       }
+}
+
+@media (min-width: 768px) {
+    .skillsGrid li:hover {
+        box-shadow: 0 4px 8px rgba(134, 151, 168, 0.5);
+    }
 }
 
   
