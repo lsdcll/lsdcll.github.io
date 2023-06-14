@@ -119,7 +119,7 @@ section {
 
 .skillsGrid li {
     background-color: white;
-    padding: 10px;
+    
     border-radius: 15px;
     width: 95px;
     height: 95px;
@@ -131,7 +131,9 @@ section {
     display: block;
     margin: 0;
     padding: 0;
-    border: 0;
+    border: 9px solid white;
+    border-radius: 15px;
+    
 }
 .logoContainer p {
     margin-top: 10px;
@@ -142,8 +144,35 @@ section {
     
 }
 
+.progressBar {
+    margin-bottom: 25px;
+    width: 100%;
+    background-color: #eee;
+    border-radius: 5px;
+}
 
+.skillLevel {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+    width: 1px;
+    transition: all 0.35s ease-in;
+}
 
+.csharp {width: 90%; background-image: linear-gradient(#546e7a, #37474f); }
+.cplusplus {width: 60%; background-image: linear-gradient(#0086d4, #00549d); }
+.python {width: 60%; background-image: linear-gradient(#ffc107, #0277bd);}
+.js {width: 70%; background-image: linear-gradient(#ffd600, #d5b300);}
+.php {width: 60%; background-image: linear-gradient(#00bcd4, #00a3b8);}
+.html {width: 90%; background-image: linear-gradient(#ff6d00, #e65100);}
+.css {width: 70%; background-image: linear-gradient(#039be5, #0277bd);}
+.mysql {width: 85%; background-image: linear-gradient(#f57f17, #00796b);}
+.docker {width: 50%; background-image: linear-gradient(#80d3f9, #0288d1);}
+.vs {width: 90%; background-image: linear-gradient(#ce93d8, #ab47bc);}
+.vscode {width: 85%; background-image: linear-gradient(#29b6f6, #0288d1);}
+.unity {width: 65%; background-image: linear-gradient(#526a76, #37474f);}
+.unreal {width: 40%; background-image: linear-gradient(#56717e, #455a64);}
+.chatgpt {width: 100%; background-image: linear-gradient(#6a8b9a, #546e7a);}
 
 :root {
     --s: 9;
