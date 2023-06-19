@@ -145,12 +145,21 @@ section {
 }
 
 .progressBar {
-    margin-bottom: 25px;
     width: 100%;
     background-color: #eee;
     border-radius: 5px;
 }
-
+.progressLegend {
+    display: flex;
+    margin-bottom: 25px;
+    width: 100%; 
+}
+.col{
+    width: 20%;
+    font-family: Rubik, serif;
+    font-size: 11px;
+    font-weight: 400;
+}
 .skillLevel {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -161,12 +170,12 @@ section {
 
 .csharp {width: 90%; background-image: linear-gradient(#546e7a, #37474f); }
 .cplusplus {width: 60%; background-image: linear-gradient(#0086d4, #00549d); }
-.python {width: 60%; background-image: linear-gradient(#ffc107, #0277bd);}
+.python {width: 60%; background-image: linear-gradient(#ffc107, #cf9e09);}
 .js {width: 70%; background-image: linear-gradient(#ffd600, #d5b300);}
 .php {width: 60%; background-image: linear-gradient(#00bcd4, #00a3b8);}
 .html {width: 90%; background-image: linear-gradient(#ff6d00, #e65100);}
 .css {width: 70%; background-image: linear-gradient(#039be5, #0277bd);}
-.mysql {width: 85%; background-image: linear-gradient(#f57f17, #00796b);}
+.mysql {width: 85%; background-image: linear-gradient(#f57f17, #ca6813);}
 .docker {width: 50%; background-image: linear-gradient(#80d3f9, #0288d1);}
 .vs {width: 90%; background-image: linear-gradient(#ce93d8, #ab47bc);}
 .vscode {width: 85%; background-image: linear-gradient(#29b6f6, #0288d1);}
