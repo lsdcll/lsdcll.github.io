@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+    //Event Binding for Skill Icon Buttons
     $(".logoContainer").hover(function() {
         //console.log(this.dataset.skill);
         const progBar = document.querySelector('.skillLevel');
@@ -98,5 +98,34 @@ $(document).ready(function(){
                 break;
         }
     });
+
+    const canvas = document.querySelector('#_canvas');
+    const c = canvas.getContext('2d');
+    const image = new Image()
+    const playerImage = new Image();
+    const unitScale = 8;
+
+    c.imageSmoothingEnabled = false;
+    playerImage.src ='./assets/player.png'
+    image.src = "./assets/gamedev_portfolio_lvl1.png";
+
+    image.onload = () => {
+        ///console.log(image);
+        c.drawImage(image, -15 * unitScale, -15 * unitScale, image.width / 2, image.height / 2);
+        c.drawImage(playerImage,
+            1,
+            1,
+            playerImage.width / 6 - 2,
+            playerImage.height / 6 - 2,
+            Math.round(canvas.width / 2 - (playerImage.width / 6) / 2),
+            Math.round(canvas.height / 2 - (playerImage.height / 6) / 2),
+            15,
+            22
+            );
+    };
+
+    
+
+    
 
 });

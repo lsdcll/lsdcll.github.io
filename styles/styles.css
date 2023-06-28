@@ -212,6 +212,13 @@ section {
     animation: liMove calc(var(--speed)) infinite;
 }
 
+#_canvas {
+    width: 480px;
+    height: 320px;
+    image-rendering: pixelated;
+}
+
+
 @keyframes move {
     0% {
         transform: translate(0,0);
