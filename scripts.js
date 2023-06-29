@@ -13,9 +13,26 @@ class Sprite {
             );
     }
 }
+class Collider {
+    constructor({pos}){
+        this.pos = pos;
+        this.width = 8;
+        this.height = 8;
+    }
+
+    draw() {
+        c.fillStyle = 'red';
+        c.fillRect(this.pos.x, this.pos.y, this.width, this.height);
+    }
+}
 
 let canvas;
 let c;
+const unitScale = 8;
+const lvlOffset = {
+    x: -15,
+    y: -15
+};
 const keys = {
     w: {pressed: false},
     a: {pressed: false},
@@ -27,11 +44,27 @@ const image = new Image()
 const playerImage = new Image();
 playerImage.src ='./assets/player.png'
 image.src = "./assets/gamedev_portfolio_lvl1.png";
+const collisionsMap = [];
+for(let i = 0; i < collisions.length; i+= 50){
+    collisionsMap.push(collisions.slice(i, 50 + i));
+}
+const colliders = [];
+collisionsMap.forEach((row, y) => {
+    row.forEach((val, x) => {
+        if(val != 0){
+            colliders.push(new Collider(
+                {pos: {
+                    x: x * unitScale + lvlOffset.x,
+                    y: y * unitScale + lvlOffset.y
+                }}));
+        }
+    });
+});
 
-const unitScale = 8;
-const background = new Sprite({pos: {x: -15 * unitScale, y: -15 * unitScale}, 
+const background = new Sprite({pos: {x: lvlOffset.x * unitScale, y: lvlOffset.y * unitScale}, 
     image: image
-})
+});
+let lastKey = '';
 
 
 $(document).ready(function(){
@@ -150,15 +183,19 @@ function handleKeydown(e){
     switch(e.key){
         case 'w':
             keys.w.pressed = true;
+            lastKey = 'w';
             break;
         case 'a':
             keys.a.pressed = true;
+            lastKey = 'a';
             break;
         case 's':
             keys.s.pressed = true;
+            lastKey = 's';
             break;
         case 'd':
             keys.d.pressed = true;
+            lastKey = 'd';
             break;
     };
 }
@@ -183,7 +220,7 @@ function handleKeyup(e){
 function render() {
     window.requestAnimationFrame(render);
     background.draw();
-    
+    colliders.forEach(collider => {collider.draw();});
     c.drawImage(playerImage,
         1,
         1,
@@ -195,16 +232,16 @@ function render() {
         22
         );
 
-        if(keys.w.pressed){
+        if(keys.w.pressed && lastKey == 'w'){
             background.pos.y += 0.3; 
         }
-        if(keys.a.pressed){
+        else if(keys.a.pressed && lastKey == 'a'){
             background.pos.x += 0.3; 
         }
-        if(keys.s.pressed){
+        else if(keys.s.pressed && lastKey == 's'){
             background.pos.y -= 0.3; 
         }
-        if(keys.d.pressed){
+        else if(keys.d.pressed && lastKey == 'd'){
             background.pos.x -= 0.3; 
         }
 }
