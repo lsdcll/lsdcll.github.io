@@ -1,3 +1,39 @@
+class Sprite {
+    constructor({pos, velocity, image}){
+        this.pos = pos;
+        this.image = image;
+    }
+
+    draw() {
+        c.drawImage(this.image,
+            this.pos.x,
+            this.pos.y, 
+            this.image.width / 2,
+            this.image.height / 2
+            );
+    }
+}
+
+let canvas;
+let c;
+const keys = {
+    w: {pressed: false},
+    a: {pressed: false},
+    s: {pressed: false},
+    d: {pressed: false},
+}
+
+const image = new Image()
+const playerImage = new Image();
+playerImage.src ='./assets/player.png'
+image.src = "./assets/gamedev_portfolio_lvl1.png";
+
+const unitScale = 8;
+const background = new Sprite({pos: {x: -15 * unitScale, y: -15 * unitScale}, 
+    image: image
+})
+
+
 $(document).ready(function(){
     //Event Binding for Skill Icon Buttons
     $(".logoContainer").hover(function() {
@@ -98,34 +134,79 @@ $(document).ready(function(){
                 break;
         }
     });
-
-    const canvas = document.querySelector('#_canvas');
-    const c = canvas.getContext('2d');
-    const image = new Image()
-    const playerImage = new Image();
-    const unitScale = 8;
-
+    //Handle Keyboard Input
+    window.addEventListener('keydown', (e) => handleKeydown(e));
+    window.addEventListener('keyup', (e) => handleKeyup(e));
+    //Bind DOM elements and context => start render
+    canvas = document.querySelector('#_canvas');
+    c = canvas.getContext('2d');
     c.imageSmoothingEnabled = false;
-    playerImage.src ='./assets/player.png'
-    image.src = "./assets/gamedev_portfolio_lvl1.png";
-
-    image.onload = () => {
-        ///console.log(image);
-        c.drawImage(image, -15 * unitScale, -15 * unitScale, image.width / 2, image.height / 2);
-        c.drawImage(playerImage,
-            1,
-            1,
-            playerImage.width / 6 - 2,
-            playerImage.height / 6 - 2,
-            Math.round(canvas.width / 2 - (playerImage.width / 6) / 2),
-            Math.round(canvas.height / 2 - (playerImage.height / 6) / 2),
-            15,
-            22
-            );
-    };
-
-    
-
-    
+    render();
 
 });
+
+function handleKeydown(e){
+    
+    switch(e.key){
+        case 'w':
+            keys.w.pressed = true;
+            break;
+        case 'a':
+            keys.a.pressed = true;
+            break;
+        case 's':
+            keys.s.pressed = true;
+            break;
+        case 'd':
+            keys.d.pressed = true;
+            break;
+    };
+}
+function handleKeyup(e){
+    
+    switch(e.key){
+        case 'w':
+            keys.w.pressed = false;
+            break;
+        case 'a':
+            keys.a.pressed = false;
+            break;
+        case 's':
+            keys.s.pressed = false;
+            break;
+        case 'd':
+            keys.d.pressed = false;
+            break;
+    };
+}
+
+function render() {
+    window.requestAnimationFrame(render);
+    background.draw();
+    
+    c.drawImage(playerImage,
+        1,
+        1,
+        playerImage.width / 6 - 2,
+        playerImage.height / 6 - 2,
+        Math.round(canvas.width / 2 - (playerImage.width / 6) / 2),
+        Math.round(canvas.height / 2 - (playerImage.height / 6) / 2),
+        15,
+        22
+        );
+
+        if(keys.w.pressed){
+            background.pos.y += 0.3; 
+        }
+        if(keys.a.pressed){
+            background.pos.x += 0.3; 
+        }
+        if(keys.s.pressed){
+            background.pos.y -= 0.3; 
+        }
+        if(keys.d.pressed){
+            background.pos.x -= 0.3; 
+        }
+}
+
+
