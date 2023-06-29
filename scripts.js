@@ -13,6 +13,34 @@ class Sprite {
             );
     }
 }
+class Player {
+    constructor({image, imageScale = 1, frames = 6, frameSize = {x: 16, y: 16}, border = 1}){
+        this.image = image;
+        this.frames = frames;
+        this.border = border;
+        this.imageScale = imageScale;
+        this.frameSize = frameSize;
+    }
+
+    draw(){
+        c.drawImage(playerImage,
+            this.border,
+            this.border,
+            (playerImage.width / this.frames) - (this.border*2),
+            (playerImage.height / this.frames) - (this.border*2),
+            Math.round(canvas.width / 2 - ((playerImage.width / this.frames) - (this.border*2)) / 2) + 1,
+            Math.round(canvas.height / 2 - (((playerImage.height / this.frames) + (this.border*2)) / 2)) - 4,
+            //15
+            this.frameSize.x,
+            //22
+            this.frameSize.y
+            );
+        
+            c.fillStyle = 'red';
+            c.fillRect((canvas.width / 2) - 3, (canvas.height / 2) - 3, 8, 8);
+            
+    }
+}
 class Collider {
     constructor({pos}){
         this.pos = pos;
@@ -54,16 +82,31 @@ collisionsMap.forEach((row, y) => {
         if(val != 0){
             colliders.push(new Collider(
                 {pos: {
-                    x: x * unitScale + lvlOffset.x,
-                    y: y * unitScale + lvlOffset.y
+                    x: (x + lvlOffset.x) * unitScale,
+                    y: (y + lvlOffset.y) * unitScale 
                 }}));
+            
         }
     });
 });
 
-const background = new Sprite({pos: {x: lvlOffset.x * unitScale, y: lvlOffset.y * unitScale}, 
+const background = new Sprite({
+    pos: {
+        x: lvlOffset.x * unitScale,
+         y: lvlOffset.y * unitScale
+        }, 
     image: image
 });
+const player = new Player({
+    image: playerImage,
+    imageScale: 2,
+    frames: 6,
+    frameSize: {
+        x: 15,
+        y: 22
+    }});
+
+
 let lastKey = '';
 
 
@@ -216,34 +259,46 @@ function handleKeyup(e){
             break;
     };
 }
+const testCollider = new Collider({
+    pos: {
+        x: (25 + lvlOffset.x) * unitScale,
+        y: (25 + lvlOffset.y) * unitScale 
+    }
+});
 
+const movables = [background, testCollider];
 function render() {
+    
     window.requestAnimationFrame(render);
     background.draw();
-    colliders.forEach(collider => {collider.draw();});
-    c.drawImage(playerImage,
-        1,
-        1,
-        playerImage.width / 6 - 2,
-        playerImage.height / 6 - 2,
-        Math.round(canvas.width / 2 - (playerImage.width / 6) / 2),
-        Math.round(canvas.height / 2 - (playerImage.height / 6) / 2),
-        15,
-        22
-        );
+    //colliders.forEach(collider => {collider.draw();});
+    testCollider.draw();
+    player.draw();
 
-        if(keys.w.pressed && lastKey == 'w'){
-            background.pos.y += 0.3; 
-        }
-        else if(keys.a.pressed && lastKey == 'a'){
-            background.pos.x += 0.3; 
-        }
-        else if(keys.s.pressed && lastKey == 's'){
-            background.pos.y -= 0.3; 
-        }
-        else if(keys.d.pressed && lastKey == 'd'){
-            background.pos.x -= 0.3; 
-        }
+    c.fillStyle = 'blue';
+    c.fillRect(canvas.width /2, canvas.height/2, 1, canvas.height)
+    c.fillRect(canvas.width /2, canvas.height/2, canvas.width, 1)
+
+    if(keys.w.pressed && lastKey == 'w'){
+        movables.forEach(item => {
+            item.pos.y += 0.3; 
+        });
+    }
+    else if(keys.a.pressed && lastKey == 'a'){
+        movables.forEach(item => {
+            item.pos.x += 0.3; 
+        });
+    }
+    else if(keys.s.pressed && lastKey == 's'){
+        movables.forEach(item => {
+            item.pos.y -= 0.3; 
+        });
+    }
+    else if(keys.d.pressed && lastKey == 'd'){
+        movables.forEach(item => {
+            item.pos.x -= 0.3; 
+        });
+    }
 }
 
 
