@@ -91,3 +91,26 @@ class Collider {
         c.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     }
 }
+class Door extends Collider {
+    constructor({pos, width, height, _InteractDialog}){
+        super({pos, width, height});
+        this.dlg = _InteractDialog;
+    }
+}
+class InteractDialog {
+    constructor({interactDialog, dlgAction}){
+        this.interactDialog = interactDialog;
+        this.dlgAction = dlgAction;
+        this.show = false;
+    }
+
+    
+    draw() {
+        
+        if(this.show){
+            console.log('show interact message');
+        }
+    }
+    
+    
+}

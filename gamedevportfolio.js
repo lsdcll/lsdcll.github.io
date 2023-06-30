@@ -38,6 +38,10 @@ const collisionsDataArray = [];
 for(let i = 0; i < collisions.length; i+= 50){
     collisionsDataArray.push(collisions.slice(i, 50 + i));
 }
+const doorCollisionsDataArray = [];
+for(let i = 0; i < doorCollisions.length; i+=50){
+    doorCollisionsDataArray.push(doorCollisions.slice(i, 50 + i));
+}
 const colliders = [];
 collisionsDataArray.forEach((row, y) => {
     row.forEach((val, x) => {
@@ -51,7 +55,28 @@ collisionsDataArray.forEach((row, y) => {
         }
     });
 });
-const movables = [background, foreground, ...colliders];
+const doors = [];
+doorCollisionsDataArray.forEach((row, y) => {
+    row.forEach((val, x) => {
+        if(val != 0){
+            doors.push(new Door(
+                {
+                    pos: {
+                        x: (x + lvlOffset.x) * unitScale,
+                        y: (y + lvlOffset.y) * unitScale
+                    },
+                    _InteractDialog: new InteractDialog(
+                        {
+                            interactDialog: 'press A to open',
+                            dlgAction: null
+                        }
+                    )
+                }
+            ));
+        }
+    })
+})
+const movables = [background, foreground, ...colliders, ...doors];
 let lastKey = '';
 
 window.onload = () => {
@@ -75,7 +100,7 @@ window.onload = () => {
 
     render();
 }
-
+//MAIN GAME LOOP
 function render() {
     //console.log(playerPos);
     window.requestAnimationFrame(render);
@@ -89,14 +114,43 @@ function render() {
     }
     else{
         foreground.draw();
-        player.draw();
-        
+        player.draw(); 
     }
+    doors.forEach(door => {
+        door.dlg.draw();
+        door.dlg.show = false;
+    })
     
 
-    //c.fillStyle = 'blue';
-    //c.fillRect(canvas.width /2, canvas.height/2, 1, canvas.height)
-    //c.fillRect(canvas.width /2, canvas.height/2, canvas.width, 1)
+    //Collision Detection
+    //Interactable Detection
+    for(let i = 0; i < doors.length; i++){
+        const door = doors[i];
+        if(
+            rectangularCollision({
+                rect1: player.collider,
+                rect2: {
+                    ...door,
+                    pos: {
+                        x: door.pos.x,
+                        y: door.pos.y + (1 * unitScale)
+                    }
+                }
+            }) ||
+            rectangularCollision({
+                rect1: player.collider,
+                rect2: {
+                    ...door,
+                    pos: {
+                        x: door.pos.x,
+                        y: door.pos.y - (1 * unitScale)
+                    }
+                }
+            })){
+                door.dlg.show = true;
+                break;
+            }
+    }
     let playerMove = true;
     player.moving = false;
     if(keys.w.pressed && lastKey == 'w'){
@@ -118,7 +172,7 @@ function render() {
                     {
                 playerMove = false;
                 
-                console.log(boundary.pos.y + ' , '+ 'colliding');
+                //console.log(boundary.pos.y + ' , '+ 'colliding');
                 break;
             } 
         }
@@ -146,7 +200,7 @@ function render() {
                     }))
                     {
                 playerMove = false;
-                console.log('colliding');
+                ///console.log('colliding');
                 break;
             } 
         }
@@ -174,7 +228,7 @@ function render() {
                     }))
                     {
                 playerMove = false;
-                console.log('colliding');
+                //console.log('colliding');
                 break;
             } 
         }
@@ -202,7 +256,7 @@ function render() {
                     }))
                     {
                 playerMove = false;
-                console.log('colliding');
+                //console.log('colliding');
                 break;
             } 
         }
