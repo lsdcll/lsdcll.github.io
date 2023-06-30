@@ -14,48 +14,87 @@ class Sprite {
     }
 }
 class Player {
-    constructor({image, imageScale = 1, frames = 6, frameSize = {x: 16, y: 16}, border = 1}){
+    constructor({ image, imageScale = 1, frames = 6, frameSize = {x: 16, y: 16}, border = 1, colliderOffset = {x: 3, y: 13}}){
         this.image = image;
         this.frames = frames;
+        this.frame = 0;
+        this.elapsedFrames = 0;
+        this.frameRate = 15;
+        this.spriteSheetY = 1;
+        this.moving = false;
+        this.direction = 'down'
         this.border = border;
         this.imageScale = imageScale;
         this.frameSize = frameSize;
+        this.pos = {
+            x: Math.round(canvas.width / 2 - ((playerImage.width / this.frames) - 2) / 2) + 1,
+            y: Math.round(canvas.height / 2 - (((playerImage.height / this.frames) + 2) / 2)) - 4
+        }
+        this.collider = new Collider({
+            pos: {
+                x: this.pos.x + colliderOffset.x,
+                y: this.pos.y + colliderOffset.y
+            },
+            width: 7,
+            height: 8
+        })
+        this.drawCollider = false;
     }
 
     draw(){
-        c.drawImage(playerImage,
-            this.border,
-            this.border,
-            (playerImage.width / this.frames) - (this.border*2),
-            (playerImage.height / this.frames) - (this.border*2),
-            Math.round(canvas.width / 2 - ((playerImage.width / this.frames) - (this.border*2)) / 2) + 1,
-            Math.round(canvas.height / 2 - (((playerImage.height / this.frames) + (this.border*2)) / 2)) - 4,
+        if(this.direction == 'down' && this.moving) this.spriteSheetY = 6;
+        else if(this.direction == 'up' && this.moving) this.spriteSheetY = 8;
+        else if(this.direction == 'right' && this.moving) this.spriteSheetY = 7;
+        else if(this.direction == 'left' && this.moving) this.spriteSheetY = 5;
+        else if(this.direction == 'down' && !this.moving) this.spriteSheetY = 1;
+        else if(this.direction == 'right' && !this.moving) this.spriteSheetY = 2;
+        else if(this.direction == 'up' && !this.moving) this.spriteSheetY = 3;
+        else if(this.direction == 'left' && !this.moving) this.spriteSheetY = 4;
+
+        c.drawImage(this.image,
+            (this.border + (this.frame<2?0:this.frame-1)) + (this.frame * (this.frameSize.x + 1) ),
+            this.spriteSheetY + ((this.frameSize.y + 1) * (this.spriteSheetY - 1)),
+            (this.image.width / this.frames) - (this.border*2),
+            (this.image.height / 8) - (this.border*2),
+            this.pos.x,
+            this.pos.y,
             //15
             this.frameSize.x,
             //22
             this.frameSize.y
             );
-        
-            c.fillStyle = 'red';
-            c.fillRect((canvas.width / 2) - 3, (canvas.height / 2) - 3, 8, 8);
+            this.elapsedFrames++;
+
+            if(this.elapsedFrames % this.frameRate === 0){
+                if(this.frame < this.frames - 1) this.frame++;
+                else this.frame = 0;
+            }
+            
+
+            if(this.drawCollider){
+                c.fillStyle = 'red';
+                c.fillRect(this.collider.pos.x, this.collider.pos.y, this.collider.width, this.collider.height);
+            }
+            
             
     }
 }
 class Collider {
-    constructor({pos}){
+    constructor({pos, width = 8, height = 8}){
         this.pos = pos;
-        this.width = 8;
-        this.height = 8;
+        this.width = width;
+        this.height = height;
     }
 
     draw() {
-        c.fillStyle = 'red';
+        c.fillStyle = 'rgba(255,0,0,0)';
         c.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     }
 }
 
 let canvas;
 let c;
+let player;
 const unitScale = 8;
 const lvlOffset = {
     x: -15,
@@ -68,10 +107,36 @@ const keys = {
     d: {pressed: false},
 }
 
-const image = new Image()
+const image = new Image();
+const foregroundImage = new Image();
 const playerImage = new Image();
 playerImage.src ='./assets/player.png'
+foregroundImage.src = './assets/gamedev_portfolio_lvl1_fg.png'
 image.src = "./assets/gamedev_portfolio_lvl1.png";
+
+window.onload = () => {
+    //Handle Keyboard Input
+    window.addEventListener('keydown', (e) => handleKeydown(e));
+    window.addEventListener('keyup', (e) => handleKeyup(e));
+    //Bind DOM elements and context => start render
+    canvas = document.querySelector('#_canvas');
+    c = canvas.getContext('2d');
+    c.imageSmoothingEnabled = false;
+    
+    player = new Player({
+        image: playerImage,
+        imageScale: 2,
+        frames: 6,
+        frameSize: {
+            x: 15,
+            y: 22
+        }});
+    //player.drawCollider = true;
+
+    render();
+}
+
+
 const collisionsMap = [];
 for(let i = 0; i < collisions.length; i+= 50){
     collisionsMap.push(collisions.slice(i, 50 + i));
@@ -97,19 +162,200 @@ const background = new Sprite({
         }, 
     image: image
 });
-const player = new Player({
-    image: playerImage,
-    imageScale: 2,
-    frames: 6,
-    frameSize: {
-        x: 15,
-        y: 22
-    }});
+const foreground = new Sprite({
+    pos: {
+        x: lvlOffset.x * unitScale,
+         y: lvlOffset.y * unitScale
+        }, 
+    image: foregroundImage
+})
+
 
 
 let lastKey = '';
 
 
+
+
+function handleKeydown(e){
+    
+    switch(e.key){
+        case 'w':
+            keys.w.pressed = true;
+            lastKey = 'w';
+            break;
+        case 'a':
+            keys.a.pressed = true;
+            lastKey = 'a';
+            break;
+        case 's':
+            keys.s.pressed = true;
+            lastKey = 's';
+            break;
+        case 'd':
+            keys.d.pressed = true;
+            lastKey = 'd';
+            break;
+    };
+}
+function handleKeyup(e){
+    
+    switch(e.key){
+        case 'w':
+            keys.w.pressed = false;
+            break;
+        case 'a':
+            keys.a.pressed = false;
+            break;
+        case 's':
+            keys.s.pressed = false;
+            break;
+        case 'd':
+            keys.d.pressed = false;
+            break;
+    };
+}
+
+const movables = [background, foreground, ...colliders];
+
+function render() {
+    //console.log(playerPos);
+    window.requestAnimationFrame(render);
+    background.draw();
+    colliders.forEach(collider => {
+        collider.draw();
+    });
+    if(foreground.pos.y >= -155){
+        player.draw();
+        foreground.draw();
+    }
+    else{
+        foreground.draw();
+        player.draw();
+        
+    }
+    
+
+    //c.fillStyle = 'blue';
+    //c.fillRect(canvas.width /2, canvas.height/2, 1, canvas.height)
+    //c.fillRect(canvas.width /2, canvas.height/2, canvas.width, 1)
+    let playerMove = true;
+    player.moving = false;
+    if(keys.w.pressed && lastKey == 'w'){
+        player.moving = true;
+        player.direction = 'up';
+        for(let i = 0; i < colliders.length; i++){
+            const boundary = colliders[i];
+            if(
+                rectangularCollision({
+                    rect1: player.collider,
+                    rect2: {
+                        ...boundary,
+                        pos: {
+                            x: boundary.pos.x,
+                            y: boundary.pos.y + 0.3
+                        }
+                    }
+                    }))
+                    {
+                playerMove = false;
+                
+                console.log(boundary.pos.y + ' , '+ 'colliding');
+                break;
+            } 
+        }
+        if(playerMove){
+            movables.forEach(item => {
+                item.pos.y += 0.3; 
+            });
+        }
+    }
+    else if(keys.a.pressed && lastKey == 'a'){
+        player.moving = true;
+        player.direction = 'left';
+        for(let i = 0; i < colliders.length; i++){
+            const boundary = colliders[i];
+            if(
+                rectangularCollision({
+                    rect1: player.collider,
+                    rect2: {
+                        ...boundary,
+                        pos: {
+                            x: boundary.pos.x + 0.3,
+                            y: boundary.pos.y 
+                        }
+                    }
+                    }))
+                    {
+                playerMove = false;
+                console.log('colliding');
+                break;
+            } 
+        }
+        if(playerMove){
+            movables.forEach(item => {
+                item.pos.x += 0.3; 
+            });
+        }
+    }
+    else if(keys.s.pressed && lastKey == 's'){
+        player.moving = true;
+        player.direction = 'down';
+        for(let i = 0; i < colliders.length; i++){
+            const boundary = colliders[i];
+            if(
+                rectangularCollision({
+                    rect1: player.collider,
+                    rect2: {
+                        ...boundary,
+                        pos: {
+                            x: boundary.pos.x,
+                            y: boundary.pos.y - 0.3 
+                        }
+                    }
+                    }))
+                    {
+                playerMove = false;
+                console.log('colliding');
+                break;
+            } 
+        }
+        if(playerMove){
+            movables.forEach(item => {
+                item.pos.y -= 0.3; 
+            });
+        }
+    }
+    else if(keys.d.pressed && lastKey == 'd'){
+        player.moving = true;
+        player.direction = 'right';
+        for(let i = 0; i < colliders.length; i++){
+            const boundary = colliders[i];
+            if(
+                rectangularCollision({
+                    rect1: player.collider,
+                    rect2: {
+                        ...boundary,
+                        pos: {
+                            x: boundary.pos.x - 0.3,
+                            y: boundary.pos.y  
+                        }
+                    }
+                    }))
+                    {
+                playerMove = false;
+                console.log('colliding');
+                break;
+            } 
+        }
+        if(playerMove){
+            movables.forEach(item => {
+                item.pos.x -= 0.3; 
+            });
+        }
+        
+    }
+}
 $(document).ready(function(){
     //Event Binding for Skill Icon Buttons
     $(".logoContainer").hover(function() {
@@ -210,95 +456,17 @@ $(document).ready(function(){
                 break;
         }
     });
-    //Handle Keyboard Input
-    window.addEventListener('keydown', (e) => handleKeydown(e));
-    window.addEventListener('keyup', (e) => handleKeyup(e));
-    //Bind DOM elements and context => start render
-    canvas = document.querySelector('#_canvas');
-    c = canvas.getContext('2d');
-    c.imageSmoothingEnabled = false;
-    render();
-
+    
+    
 });
 
-function handleKeydown(e){
-    
-    switch(e.key){
-        case 'w':
-            keys.w.pressed = true;
-            lastKey = 'w';
-            break;
-        case 'a':
-            keys.a.pressed = true;
-            lastKey = 'a';
-            break;
-        case 's':
-            keys.s.pressed = true;
-            lastKey = 's';
-            break;
-        case 'd':
-            keys.d.pressed = true;
-            lastKey = 'd';
-            break;
-    };
-}
-function handleKeyup(e){
-    
-    switch(e.key){
-        case 'w':
-            keys.w.pressed = false;
-            break;
-        case 'a':
-            keys.a.pressed = false;
-            break;
-        case 's':
-            keys.s.pressed = false;
-            break;
-        case 'd':
-            keys.d.pressed = false;
-            break;
-    };
-}
-const testCollider = new Collider({
-    pos: {
-        x: (25 + lvlOffset.x) * unitScale,
-        y: (25 + lvlOffset.y) * unitScale 
-    }
-});
-
-const movables = [background, testCollider];
-function render() {
-    
-    window.requestAnimationFrame(render);
-    background.draw();
-    //colliders.forEach(collider => {collider.draw();});
-    testCollider.draw();
-    player.draw();
-
-    c.fillStyle = 'blue';
-    c.fillRect(canvas.width /2, canvas.height/2, 1, canvas.height)
-    c.fillRect(canvas.width /2, canvas.height/2, canvas.width, 1)
-
-    if(keys.w.pressed && lastKey == 'w'){
-        movables.forEach(item => {
-            item.pos.y += 0.3; 
-        });
-    }
-    else if(keys.a.pressed && lastKey == 'a'){
-        movables.forEach(item => {
-            item.pos.x += 0.3; 
-        });
-    }
-    else if(keys.s.pressed && lastKey == 's'){
-        movables.forEach(item => {
-            item.pos.y -= 0.3; 
-        });
-    }
-    else if(keys.d.pressed && lastKey == 'd'){
-        movables.forEach(item => {
-            item.pos.x -= 0.3; 
-        });
-    }
+function rectangularCollision({rect1, rect2}){
+    return (
+        rect1.pos.x + rect1.width >= rect2.pos.x &&
+        rect1.pos.x <= rect2.pos.x + rect2.width &&
+        rect1.pos.y <= rect2.pos.y + rect2.height &&
+        rect1.pos.y + rect1.height >= rect2.pos.y
+    )
 }
 
 
