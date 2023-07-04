@@ -1,16 +1,47 @@
 class Sprite {
-    constructor({pos, velocity, image}){
+    constructor({pos, velocity, image, scale, frames = 1, border = 0}){
         this.pos = pos;
         this.image = image;
+        this.scale = scale;
+        this.frames = frames;
+        this.border = border;
+        this.frame = 0
+        this.elapsedFrames = 0;
+        this.frameRate = 23;
+        this.image.onload = () => {
+            this.width = this.image.width;
+            this.height = this.image.height;
+        }
     }
 
     draw() {
-        c.drawImage(this.image,
+        /* c.drawImage(this.image,
             this.pos.x,
             this.pos.y, 
-            this.image.width / 2,
-            this.image.height / 2
-            );
+            this.image.width / scale,
+            this.image.height / scale
+        ); */
+        c.drawImage(this.image,
+            (this.frame) * (this.width / this.frames),
+            0,
+            (this.width / this.frames),
+            (this.height),
+            this.pos.x,
+            this.pos.y,
+            //15
+            (this.width / this.frames) / this.scale,
+            //22
+            this.height / this.scale
+        );
+        if(this.frames > 1){
+            this.elapsedFrames++;
+
+            if(this.elapsedFrames % this.frameRate === 0){
+                if(this.frame < this.frames - 1) this.frame++;
+                else this.frame = 0;
+            }
+        }
+        
     }
 }
 class Player {
@@ -62,19 +93,19 @@ class Player {
             this.frameSize.x,
             //22
             this.frameSize.y
-            );
-            this.elapsedFrames++;
+        );
+        this.elapsedFrames++;
 
-            if(this.elapsedFrames % this.frameRate === 0){
-                if(this.frame < this.frames - 1) this.frame++;
-                else this.frame = 0;
-            }
+        if(this.elapsedFrames % this.frameRate === 0){
+            if(this.frame < this.frames - 1) this.frame++;
+            else this.frame = 0;
+        }
             
 
-            if(this.drawCollider){
-                c.fillStyle = 'red';
-                c.fillRect(this.collider.pos.x, this.collider.pos.y, this.collider.width, this.collider.height);
-            }
+        if(this.drawCollider){
+            c.fillStyle = 'red';
+            c.fillRect(this.collider.pos.x, this.collider.pos.y, this.collider.width, this.collider.height);
+        }
             
             
     }
@@ -92,10 +123,12 @@ class Collider {
     }
 }
 class Door extends Collider {
-    constructor({pos, width, height, _InteractDialog}){
+    constructor({pos, width, height}){
         super({pos, width, height});
-        this.dlg = _InteractDialog;
+        
     }
+
+
 }
 class InteractDialog {
     constructor({interactDialog, dlgAction}){
@@ -109,8 +142,16 @@ class InteractDialog {
         
         if(this.show){
             console.log('show interact message');
+            c.font = "10px Arial";
+            c.textAlign = 'center';
+            c.fillStyle = 'white';
+            console.log(player.pos);
+            c.fillText("Press a to interact", 114, 59);
         }
     }
     
     
+}
+class Level {
+    constructor({_bg, _fg }){}
 }

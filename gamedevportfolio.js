@@ -2,6 +2,7 @@
 let canvas;
 let c;
 let player;
+let interact;
 const unitScale = 8;
 const lvlOffset = {
     x: -15,
@@ -17,23 +18,37 @@ const keys = {
 const image = new Image();
 const foregroundImage = new Image();
 const playerImage = new Image();
+const interactImage = new Image();
 playerImage.src ='./assets/player.png'
 foregroundImage.src = './assets/gamedev_portfolio_lvl1_fg.png'
 image.src = "./assets/gamedev_portfolio_lvl1.png";
+interactImage.src = "./assets/interact.png";
 const background = new Sprite({
     pos: {
         x: lvlOffset.x * unitScale,
          y: lvlOffset.y * unitScale
         }, 
-    image: image
+    image: image,
+    scale: 2,
+    border: 0
 });
 const foreground = new Sprite({
     pos: {
         x: lvlOffset.x * unitScale,
          y: lvlOffset.y * unitScale
         }, 
-    image: foregroundImage
+    image: foregroundImage,
+    scale: 2
 })
+interact = new Sprite({
+    pos: {
+        x: 112,
+        y: 40
+    },
+    image: interactImage,
+    scale: 1,
+    frames: 4,
+    });
 const collisionsDataArray = [];
 for(let i = 0; i < collisions.length; i+= 50){
     collisionsDataArray.push(collisions.slice(i, 50 + i));
@@ -64,13 +79,7 @@ doorCollisionsDataArray.forEach((row, y) => {
                     pos: {
                         x: (x + lvlOffset.x) * unitScale,
                         y: (y + lvlOffset.y) * unitScale
-                    },
-                    _InteractDialog: new InteractDialog(
-                        {
-                            interactDialog: 'press A to open',
-                            dlgAction: null
-                        }
-                    )
+                    }
                 }
             ));
         }
@@ -96,6 +105,8 @@ window.onload = () => {
             x: 15,
             y: 22
         }});
+    
+    console.log(interact.width);
     //player.drawCollider = true;
 
     render();
@@ -116,10 +127,11 @@ function render() {
         foreground.draw();
         player.draw(); 
     }
-    doors.forEach(door => {
-        door.dlg.draw();
+    
+    /* doors.forEach(door => {
+        door.dlg.showDialog();
         door.dlg.show = false;
-    })
+    }) */
     
 
     //Collision Detection
@@ -147,7 +159,7 @@ function render() {
                     }
                 }
             })){
-                door.dlg.show = true;
+                interact.draw();
                 break;
             }
     }
