@@ -153,5 +153,70 @@ class InteractDialog {
     
 }
 class Level {
-    constructor({_bg, _fg }){}
+    constructor({bgSrc, fgSrc, collisionMap, doorMap, size, offset, scale, unitScale}){
+        this.bg = new Image();
+        this.bg.src = bgSrc;
+        this.fg = new Image();
+        this.fg.src = fgSrc;
+        
+        this.size = size;
+        this.offset = offset;
+        this.unitScale = unitScale;
+
+        this.collisionsData = [];
+        this.doorsData = [];
+        this.colliders = [];
+        this.doors = [];
+
+        this.background = new Sprite({
+            pos: {
+                x: offset.x * unitScale,
+                y: offset.y * unitScale
+            },
+            image: this.bg,
+            scale: scale
+        });
+        this.foreground = new Sprite({
+            pos: {
+                x: offset.x * unitScale,
+                 y: offset.y * unitScale
+                }, 
+            image: this.fg,
+            scale: scale
+        });
+
+        for(let i = 0; i < collisionMap.length; i+= this.size.x){
+            this.collisionsData.push(collisionMap.slice(i, this.size.x + i));
+        }
+        this.collisionsData.forEach((row, y) => {
+            row.forEach((val, x) => {
+                if(val != 0){
+                    this.colliders.push(new Collider(
+                        {pos: {
+                            x: (x + offset.x) * unitScale,
+                            y: (y + offset.y) * unitScale 
+                        }}));
+                    
+                }
+            });
+        });
+        for(let i = 0; i < doorMap.length; i+=this.size.x){
+            this.doorsData.push(doorMap.slice(i, this.size.x + i));
+        }
+        this.doorsData.forEach((row, y) => {
+            row.forEach((val, x) => {
+                if(val != 0){
+                    this.doors.push(new Door(
+                        {
+                            pos: {
+                                x: (x + offset.x) * unitScale,
+                                y: (y + offset.y) * unitScale
+                            }
+                        }
+                    ));
+                }
+            })
+        })
+
+    }
 }

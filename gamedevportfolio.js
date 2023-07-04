@@ -3,43 +3,37 @@ let canvas;
 let c;
 let player;
 let interact;
-const unitScale = 8;
-const lvlOffset = {
-    x: -15,
-    y: -15
-};
+
 const keys = {
     w: {pressed: false},
     a: {pressed: false},
     s: {pressed: false},
     d: {pressed: false},
 }
+const levels = [];
+levels.push(new Level({
+    bgSrc: './assets/gamedev_portfolio_lvl1.png',
+    fgSrc: './assets/gamedev_portfolio_lvl1_fg.png',
+    collisionMap: collisionsLvlOne,
+    doorMap: doorCollisionsLvlOne,
+    size: {
+        x: 50,
+        y: 50
+    },
+    offset: {
+        x: -15,
+        y: -15
+    },
+    scale: 2,
+    unitScale: 8
+}));
 
-const image = new Image();
-const foregroundImage = new Image();
+
 const playerImage = new Image();
 const interactImage = new Image();
 playerImage.src ='./assets/player.png'
-foregroundImage.src = './assets/gamedev_portfolio_lvl1_fg.png'
-image.src = "./assets/gamedev_portfolio_lvl1.png";
 interactImage.src = "./assets/interact.png";
-const background = new Sprite({
-    pos: {
-        x: lvlOffset.x * unitScale,
-         y: lvlOffset.y * unitScale
-        }, 
-    image: image,
-    scale: 2,
-    border: 0
-});
-const foreground = new Sprite({
-    pos: {
-        x: lvlOffset.x * unitScale,
-         y: lvlOffset.y * unitScale
-        }, 
-    image: foregroundImage,
-    scale: 2
-})
+
 interact = new Sprite({
     pos: {
         x: 112,
@@ -49,43 +43,11 @@ interact = new Sprite({
     scale: 1,
     frames: 4,
     });
-const collisionsDataArray = [];
-for(let i = 0; i < collisions.length; i+= 50){
-    collisionsDataArray.push(collisions.slice(i, 50 + i));
-}
-const doorCollisionsDataArray = [];
-for(let i = 0; i < doorCollisions.length; i+=50){
-    doorCollisionsDataArray.push(doorCollisions.slice(i, 50 + i));
-}
-const colliders = [];
-collisionsDataArray.forEach((row, y) => {
-    row.forEach((val, x) => {
-        if(val != 0){
-            colliders.push(new Collider(
-                {pos: {
-                    x: (x + lvlOffset.x) * unitScale,
-                    y: (y + lvlOffset.y) * unitScale 
-                }}));
-            
-        }
-    });
-});
-const doors = [];
-doorCollisionsDataArray.forEach((row, y) => {
-    row.forEach((val, x) => {
-        if(val != 0){
-            doors.push(new Door(
-                {
-                    pos: {
-                        x: (x + lvlOffset.x) * unitScale,
-                        y: (y + lvlOffset.y) * unitScale
-                    }
-                }
-            ));
-        }
-    })
-})
-const movables = [background, foreground, ...colliders, ...doors];
+    
+
+
+
+const movables = [levels[0].background, levels[0].foreground, ...levels[0].colliders, ...levels[0].doors];
 let lastKey = '';
 
 window.onload = () => {
@@ -106,38 +68,39 @@ window.onload = () => {
             y: 22
         }});
     
-    console.log(interact.width);
+    //console.log(interact.width);
     //player.drawCollider = true;
-
+    console.log(levels[0]); 
     render();
 }
 //MAIN GAME LOOP
 function render() {
+    
     //console.log(playerPos);
     window.requestAnimationFrame(render);
-    background.draw();
-    colliders.forEach(collider => {
+    levels[0].background.draw();
+    levels[0].colliders.forEach(collider => {
         collider.draw();
     });
-    if(foreground.pos.y >= -155){
+    if(levels[0].foreground.pos.y >= -155){
         player.draw();
-        foreground.draw();
+        levels[0].foreground.draw();
     }
     else{
-        foreground.draw();
+        levels[0].foreground.draw();
         player.draw(); 
     }
     
-    /* doors.forEach(door => {
+   /*  levels[0].doors.forEach(door => {
         door.dlg.showDialog();
         door.dlg.show = false;
-    }) */
+    })  */
     
 
     //Collision Detection
     //Interactable Detection
-    for(let i = 0; i < doors.length; i++){
-        const door = doors[i];
+    for(let i = 0; i < levels[0].doors.length; i++){
+        const door = levels[0].doors[i];
         if(
             rectangularCollision({
                 rect1: player.collider,
@@ -145,7 +108,7 @@ function render() {
                     ...door,
                     pos: {
                         x: door.pos.x,
-                        y: door.pos.y + (1 * unitScale)
+                        y: door.pos.y + (1 * levels[0].unitScale)
                     }
                 }
             }) ||
@@ -155,7 +118,7 @@ function render() {
                     ...door,
                     pos: {
                         x: door.pos.x,
-                        y: door.pos.y - (1 * unitScale)
+                        y: door.pos.y - (1 * levels[0].unitScale)
                     }
                 }
             })){
@@ -168,8 +131,8 @@ function render() {
     if(keys.w.pressed && lastKey == 'w'){
         player.moving = true;
         player.direction = 'up';
-        for(let i = 0; i < colliders.length; i++){
-            const boundary = colliders[i];
+        for(let i = 0; i < levels[0].colliders.length; i++){
+            const boundary = levels[0].colliders[i];
             if(
                 rectangularCollision({
                     rect1: player.collider,
@@ -197,8 +160,8 @@ function render() {
     else if(keys.a.pressed && lastKey == 'a'){
         player.moving = true;
         player.direction = 'left';
-        for(let i = 0; i < colliders.length; i++){
-            const boundary = colliders[i];
+        for(let i = 0; i < levels[0].colliders.length; i++){
+            const boundary = levels[0].colliders[i];
             if(
                 rectangularCollision({
                     rect1: player.collider,
@@ -225,8 +188,8 @@ function render() {
     else if(keys.s.pressed && lastKey == 's'){
         player.moving = true;
         player.direction = 'down';
-        for(let i = 0; i < colliders.length; i++){
-            const boundary = colliders[i];
+        for(let i = 0; i < levels[0].colliders.length; i++){
+            const boundary = levels[0].colliders[i];
             if(
                 rectangularCollision({
                     rect1: player.collider,
@@ -253,8 +216,8 @@ function render() {
     else if(keys.d.pressed && lastKey == 'd'){
         player.moving = true;
         player.direction = 'right';
-        for(let i = 0; i < colliders.length; i++){
-            const boundary = colliders[i];
+        for(let i = 0; i < levels[0].colliders.length; i++){
+            const boundary = levels[0].colliders[i];
             if(
                 rectangularCollision({
                     rect1: player.collider,
