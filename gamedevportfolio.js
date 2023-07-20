@@ -9,9 +9,13 @@ const keys = {
     a: {pressed: false},
     s: {pressed: false},
     d: {pressed: false},
+    e: {pressed: false}
 }
-const levels = [];
-levels.push(new Level({
+const levelDoorMap = {
+    2043: 1
+}
+
+GameStateManager.AddNewLevel(new Level({
     bgSrc: './assets/gamedev_portfolio_lvl1.png',
     fgSrc: './assets/gamedev_portfolio_lvl1_fg.png',
     collisionMap: collisionsLvlOne,
@@ -27,6 +31,24 @@ levels.push(new Level({
     scale: 2,
     unitScale: 8
 }));
+GameStateManager.AddNewLevel(new Level({
+    bgSrc: './assets/gamedev_portfolio_lvl2.png',
+    fgSrc: './assets/gamedev_portfolio_lvl2_fg.png',
+    collisionMap: collisionsLvlTwo,
+    doorMap: doorCollisionsLvlTwo,
+    size: {
+        x: 50,
+        y: 50
+    },
+    offset: {
+        x: -20,
+        y: -20
+    },
+    scale: 1,
+    unitScale: 32
+}));
+GameStateManager.LoadNewLevel(0);
+
 
 
 const playerImage = new Image();
@@ -46,8 +68,9 @@ interact = new Sprite({
     
 
 
-
-const movables = [levels[0].background, levels[0].foreground, ...levels[0].colliders, ...levels[0].doors];
+console.log(GameStateManager.currLevel.colliders);
+console.log(...GameStateManager.currLevel.doors.keys());
+const movables = [GameStateManager.currLevel.background, GameStateManager.currLevel.foreground, ...GameStateManager.currLevel.colliders, ...GameStateManager.currLevel.doors.keys()];
 let lastKey = '';
 
 window.onload = () => {
@@ -70,69 +93,64 @@ window.onload = () => {
     
     //console.log(interact.width);
     //player.drawCollider = true;
-    console.log(levels[0]); 
+    console.log(GameStateManager.currLevel); 
     render();
 }
 //MAIN GAME LOOP
 function render() {
     
+    //console.log(GameStateManager.currLevel.doors)
     //console.log(playerPos);
+    //Recursive Call
     window.requestAnimationFrame(render);
-    levels[0].background.draw();
-    levels[0].colliders.forEach(collider => {
-        collider.draw();
-    });
-    if(levels[0].foreground.pos.y >= -155){
-        player.draw();
-        levels[0].foreground.draw();
-    }
-    else{
-        levels[0].foreground.draw();
-        player.draw(); 
-    }
-    
-   /*  levels[0].doors.forEach(door => {
-        door.dlg.showDialog();
-        door.dlg.show = false;
-    })  */
-    
 
+    GameStateManager.currLevel.draw(player);
+    
     //Collision Detection
     //Interactable Detection
-    for(let i = 0; i < levels[0].doors.length; i++){
-        const door = levels[0].doors[i];
+    let doorCollision;
+    GameStateManager.currLevel.doors.forEach((value, key) => {
+        let door = {obj: key, val: value};
         if(
             rectangularCollision({
                 rect1: player.collider,
                 rect2: {
-                    ...door,
+                    ...door.obj,
                     pos: {
-                        x: door.pos.x,
-                        y: door.pos.y + (1 * levels[0].unitScale)
+                        x: door.obj.pos.x,
+                        y: door.obj.pos.y + (1 * GameStateManager.currLevel.unitScale)
                     }
                 }
             }) ||
             rectangularCollision({
                 rect1: player.collider,
                 rect2: {
-                    ...door,
+                    ...door.obj,
                     pos: {
-                        x: door.pos.x,
-                        y: door.pos.y - (1 * levels[0].unitScale)
+                        x: door.obj.pos.x,
+                        y: door.obj.pos.y - (1 * GameStateManager.currLevel.unitScale)
                     }
                 }
             })){
-                interact.draw();
-                break;
+                doorCollision = door;
             }
+    });
+    if(doorCollision){
+        interact.draw();
+        if(keys.e.pressed){
+            //change level
+            //console.log(levelDoorMap[doorCollision.val])
+            GameStateManager.LoadNewLevel(levelDoorMap[doorCollision.val]);
+        }
     }
+
     let playerMove = true;
     player.moving = false;
     if(keys.w.pressed && lastKey == 'w'){
         player.moving = true;
         player.direction = 'up';
-        for(let i = 0; i < levels[0].colliders.length; i++){
-            const boundary = levels[0].colliders[i];
+        for(let i = 0; i < GameStateManager.currLevel.colliders.length; i++){
+            const boundary = GameStateManager.currLevel.colliders[i];
             if(
                 rectangularCollision({
                     rect1: player.collider,
@@ -160,8 +178,8 @@ function render() {
     else if(keys.a.pressed && lastKey == 'a'){
         player.moving = true;
         player.direction = 'left';
-        for(let i = 0; i < levels[0].colliders.length; i++){
-            const boundary = levels[0].colliders[i];
+        for(let i = 0; i < GameStateManager.currLevel.colliders.length; i++){
+            const boundary = GameStateManager.currLevel.colliders[i];
             if(
                 rectangularCollision({
                     rect1: player.collider,
@@ -188,8 +206,8 @@ function render() {
     else if(keys.s.pressed && lastKey == 's'){
         player.moving = true;
         player.direction = 'down';
-        for(let i = 0; i < levels[0].colliders.length; i++){
-            const boundary = levels[0].colliders[i];
+        for(let i = 0; i < GameStateManager.currLevel.colliders.length; i++){
+            const boundary = GameStateManager.currLevel.colliders[i];
             if(
                 rectangularCollision({
                     rect1: player.collider,
@@ -216,8 +234,8 @@ function render() {
     else if(keys.d.pressed && lastKey == 'd'){
         player.moving = true;
         player.direction = 'right';
-        for(let i = 0; i < levels[0].colliders.length; i++){
-            const boundary = levels[0].colliders[i];
+        for(let i = 0; i < GameStateManager.currLevel.colliders.length; i++){
+            const boundary = GameStateManager.currLevel.colliders[i];
             if(
                 rectangularCollision({
                     rect1: player.collider,
@@ -272,6 +290,13 @@ function handleKeydown(e){
             keys.d.pressed = true;
             lastKey = 'd';
             break;
+        case 'e':
+            keys.e.pressed = true;
+            break;
+        case 'o':
+            GameStateManager.currLevel.offset.x--;
+            console.log(GameStateManager.currLevel);
+            break;
     };
 }
 function handleKeyup(e){
@@ -288,6 +313,9 @@ function handleKeyup(e){
             break;
         case 'd':
             keys.d.pressed = false;
+            break;
+        case 'e':
+            keys.e.pressed = false;
             break;
     };
 }

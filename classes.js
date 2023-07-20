@@ -123,9 +123,15 @@ class Collider {
     }
 }
 class Door extends Collider {
-    constructor({pos, width, height}){
+    constructor({pos, width, height, levelKey}){
         super({pos, width, height});
+        this.levelKey = levelKey;
         
+    }
+
+    draw() {
+        c.fillStyle = 'rgba(0,255,0,1)';
+        c.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     }
 
 
@@ -153,12 +159,13 @@ class InteractDialog {
     
 }
 class Level {
-    constructor({bgSrc, fgSrc, collisionMap, doorMap, size, offset, scale, unitScale}){
+    constructor({levelName, bgSrc, fgSrc, collisionMap, doorMap, size, offset, scale, unitScale}){
+        this.Name = levelName;
         this.bg = new Image();
         this.bg.src = bgSrc;
         this.fg = new Image();
         this.fg.src = fgSrc;
-        
+
         this.size = size;
         this.offset = offset;
         this.unitScale = unitScale;
@@ -166,7 +173,7 @@ class Level {
         this.collisionsData = [];
         this.doorsData = [];
         this.colliders = [];
-        this.doors = [];
+        this.doors = new Map();
 
         this.background = new Sprite({
             pos: {
@@ -206,17 +213,45 @@ class Level {
         this.doorsData.forEach((row, y) => {
             row.forEach((val, x) => {
                 if(val != 0){
-                    this.doors.push(new Door(
+                    this.doors.set(new Door(
                         {
                             pos: {
                                 x: (x + offset.x) * unitScale,
                                 y: (y + offset.y) * unitScale
                             }
                         }
-                    ));
+                    ), val); 
                 }
             })
         })
 
+    }
+
+    draw(player){
+        this.background.draw();
+        this.colliders.forEach(collider => {
+            collider.draw();
+        });
+        if(this.foreground.pos.y >= -155){
+            player.draw();
+            this.foreground.draw();
+        }
+        else{
+            this.foreground.draw();
+            player.draw(); 
+        }
+        this.doors.forEach(function(val, key) {key.draw();});
+    }
+}
+class GameStateManager {
+    
+    static levels = [];
+    static currLevel;    
+
+    static AddNewLevel(level){
+        this.levels.push(level)
+    }
+    static LoadNewLevel(iLevel){
+        this.currLevel = this.levels[iLevel];
     }
 }
