@@ -118,7 +118,7 @@ class Collider {
     }
 
     draw() {
-        c.fillStyle = 'rgba(255,255,255,0.5)';
+        c.fillStyle = 'rgba(255,255,255,0)';
         c.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     }
 }
