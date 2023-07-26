@@ -44,6 +44,10 @@ GameStateManager.AddNewLevel(new Level({
         x: -40.5,
         y: -46
     },
+    layerOffset: {
+        x: 0,
+        y: 0.5
+    },
     scale: 1,
     unitScale: 16
 }));
@@ -68,9 +72,8 @@ interact = new Sprite({
     
 
 
-console.log(GameStateManager.currLevel.colliders);
-console.log(...GameStateManager.currLevel.doors.keys());
-//const movables = [GameStateManager.currLevel.background, GameStateManager.currLevel.foreground, ...GameStateManager.currLevel.colliders, ...GameStateManager.currLevel.doors.keys()];
+
+
 let lastKey = '';
 
 window.onload = () => {
@@ -90,16 +93,16 @@ window.onload = () => {
             x: 15,
             y: 22
         }});
-    
-    //console.log(interact.width);
-    //player.drawCollider = true;
-    console.log(GameStateManager.currLevel); 
+     
     render();
 }
+
+//console.log(GameStateManager.levels);
 
 
 //MAIN GAME LOOP
 function render() {
+    
     
     //console.log(GameStateManager.currLevel.doors)
     //console.log(playerPos);
@@ -142,7 +145,9 @@ function render() {
         if(keys.e.pressed){
             //change level
             //console.log(levelDoorMap[doorCollision.val])
-            GameStateManager.LoadNewLevel(levelDoorMap[doorCollision.val]);
+            //GameStateManager.LoadNewLevel(parseInt(levelDoorMap[doorCollision.val]));
+            GameStateManager.LoadNewLevel(1);
+            
         }
     }
 

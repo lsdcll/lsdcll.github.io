@@ -159,7 +159,7 @@ class InteractDialog {
     
 }
 class Level {
-    constructor({levelName, bgSrc, fgSrc, collisionMap, doorMap, size, offset, scale, unitScale}){
+    constructor({levelName, bgSrc, fgSrc, collisionMap, doorMap, size, offset, scale, unitScale, layerOffset = {x: 0,y: 0}}){
         this.Name = levelName;
         this.bg = new Image();
         this.bg.src = bgSrc;
@@ -200,8 +200,8 @@ class Level {
                 if(val != 0){
                     this.colliders.push(new Collider(
                         {pos: {
-                            x: (x + offset.x) * unitScale,
-                            y: (y + offset.y) * unitScale 
+                            x: (x + offset.x + layerOffset.x) * unitScale,
+                            y: (y + offset.y + layerOffset.y) * unitScale 
                         },
                         width: unitScale,
                         height: unitScale
@@ -219,9 +219,11 @@ class Level {
                     this.doors.set(new Door(
                         {
                             pos: {
-                                x: (x + offset.x) * unitScale,
-                                y: (y + offset.y) * unitScale
-                            }
+                                x: (x + offset.x + layerOffset.x) * unitScale,
+                                y: (y + offset.y + layerOffset.y) * unitScale
+                            },
+                            width: unitScale,
+                            height: unitScale
                         }
                     ), val); 
                 }
@@ -257,7 +259,6 @@ class GameStateManager {
     }
     static LoadNewLevel(iLevel){
         this.currLevel = this.levels[iLevel];
-        this.movables = [this.currLevel.background, this.currLevel.foreground, ...this.currLevel.colliders, ...this.currLevel.doors.keys()];
-        
+        this.movables = [this.currLevel.background, this.currLevel.foreground, ...this.currLevel.colliders, ...this.currLevel.doors.keys()];  
     }
 }
