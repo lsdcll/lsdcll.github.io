@@ -130,7 +130,7 @@ class Door extends Collider {
     }
 
     draw() {
-        c.fillStyle = 'rgba(0,255,0,1)';
+        c.fillStyle = 'rgba(0,255,0,0)';
         c.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     }
 
