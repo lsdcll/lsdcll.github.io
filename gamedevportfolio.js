@@ -37,15 +37,15 @@ GameStateManager.AddNewLevel(new Level({
     collisionMap: collisionsLvlTwo,
     doorMap: doorCollisionsLvlTwo,
     size: {
-        x: 50,
-        y: 50
+        x: 100,
+        y: 100
     },
     offset: {
-        x: -20,
-        y: -20
+        x: -40.5,
+        y: -46
     },
     scale: 1,
-    unitScale: 32
+    unitScale: 16
 }));
 GameStateManager.LoadNewLevel(0);
 
