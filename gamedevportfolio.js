@@ -70,7 +70,7 @@ interact = new Sprite({
 
 console.log(GameStateManager.currLevel.colliders);
 console.log(...GameStateManager.currLevel.doors.keys());
-const movables = [GameStateManager.currLevel.background, GameStateManager.currLevel.foreground, ...GameStateManager.currLevel.colliders, ...GameStateManager.currLevel.doors.keys()];
+//const movables = [GameStateManager.currLevel.background, GameStateManager.currLevel.foreground, ...GameStateManager.currLevel.colliders, ...GameStateManager.currLevel.doors.keys()];
 let lastKey = '';
 
 window.onload = () => {
@@ -96,6 +96,8 @@ window.onload = () => {
     console.log(GameStateManager.currLevel); 
     render();
 }
+
+
 //MAIN GAME LOOP
 function render() {
     
@@ -170,7 +172,7 @@ function render() {
             } 
         }
         if(playerMove){
-            movables.forEach(item => {
+            GameStateManager.movables.forEach(item => {
                 item.pos.y += 0.3; 
             });
         }
@@ -198,7 +200,7 @@ function render() {
             } 
         }
         if(playerMove){
-            movables.forEach(item => {
+            GameStateManager.movables.forEach(item => {
                 item.pos.x += 0.3; 
             });
         }
@@ -226,7 +228,7 @@ function render() {
             } 
         }
         if(playerMove){
-            movables.forEach(item => {
+            GameStateManager.movables.forEach(item => {
                 item.pos.y -= 0.3; 
             });
         }
@@ -254,7 +256,7 @@ function render() {
             } 
         }
         if(playerMove){
-            movables.forEach(item => {
+            GameStateManager.movables.forEach(item => {
                 item.pos.x -= 0.3; 
             });
         }

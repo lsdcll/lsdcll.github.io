@@ -118,7 +118,7 @@ class Collider {
     }
 
     draw() {
-        c.fillStyle = 'rgba(255,0,0,0)';
+        c.fillStyle = 'rgba(255,0,0,1)';
         c.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     }
 }
@@ -246,6 +246,7 @@ class Level {
 class GameStateManager {
     
     static levels = [];
+    static movables = [];
     static currLevel;    
 
     static AddNewLevel(level){
@@ -253,5 +254,7 @@ class GameStateManager {
     }
     static LoadNewLevel(iLevel){
         this.currLevel = this.levels[iLevel];
+        this.movables = [this.currLevel.background, this.currLevel.foreground, ...this.currLevel.colliders, ...this.currLevel.doors.keys()];
+        console.log(this.movables);
     }
 }
