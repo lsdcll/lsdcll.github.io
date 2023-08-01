@@ -12,10 +12,13 @@ const keys = {
     e: {pressed: false}
 }
 const levelDoorMap = {
-    2043: 1
+    2043: 'Lvl1_0',
+    1290: 'Lvl0_1',
+    1291: 'Lvl0_0',
+    2719: 'Lvl1_0'
 }
 
-GameStateManager.AddNewLevel(new Level({
+GameStateManager.AddNewLevel('Lvl0_0', new Level({
     bgSrc: './assets/gamedev_portfolio_lvl1.png',
     fgSrc: './assets/gamedev_portfolio_lvl1_fg.png',
     collisionMap: collisionsLvlOne,
@@ -31,7 +34,7 @@ GameStateManager.AddNewLevel(new Level({
     scale: 2,
     unitScale: 8
 }));
-GameStateManager.AddNewLevel(new Level({
+GameStateManager.AddNewLevel('Lvl1_0', new Level({
     bgSrc: './assets/gamedev_portfolio_lvl2.png',
     fgSrc: './assets/gamedev_portfolio_lvl2_fg.png',
     collisionMap: collisionsLvlTwo,
@@ -51,7 +54,23 @@ GameStateManager.AddNewLevel(new Level({
     scale: 1,
     unitScale: 16
 }));
-GameStateManager.LoadNewLevel(0);
+GameStateManager.AddNewLevel('Lvl0_1', new Level({
+    bgSrc: './assets/gamedev_portfolio_lvl1.png',
+    fgSrc: './assets/gamedev_portfolio_lvl1_fg.png',
+    collisionMap: collisionsLvlOne,
+    doorMap: doorCollisionsLvlOne,
+    size: {
+        x: 50,
+        y: 50
+    },
+    offset: {
+        x: -10,
+        y: -5.8
+    },
+    scale: 2,
+    unitScale: 8
+}));
+GameStateManager.LoadNewLevel('Lvl0_0');
 
 
 
@@ -144,10 +163,10 @@ function render() {
         interact.draw();
         if(keys.e.pressed){
             //change level
-            //console.log(levelDoorMap[doorCollision.val])
-            //GameStateManager.LoadNewLevel(parseInt(levelDoorMap[doorCollision.val]));
-            GameStateManager.LoadNewLevel(1);
-            
+            console.log(levelDoorMap[doorCollision.val])
+            GameStateManager.LoadNewLevel(levelDoorMap[doorCollision.val]);
+            //GameStateManager.LoadNewLevel(1);
+            keys.e.pressed = false;
         }
     }
 

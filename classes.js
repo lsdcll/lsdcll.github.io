@@ -250,15 +250,16 @@ class Level {
 }
 class GameStateManager {
     
-    static levels = [];
+    static levels = {};
     static movables = [];
     static currLevel;    
 
-    static AddNewLevel(level){
-        this.levels.push(level)
+    static AddNewLevel(levelName, level){
+        this.levels[levelName] = level;
     }
-    static LoadNewLevel(iLevel){
-        this.currLevel = this.levels[iLevel];
+    static LoadNewLevel(levelName){
+        console.log(levelName);
+        this.currLevel = this.levels[levelName];
         this.movables = [this.currLevel.background, this.currLevel.foreground, ...this.currLevel.colliders, ...this.currLevel.doors.keys()];  
     }
 }
