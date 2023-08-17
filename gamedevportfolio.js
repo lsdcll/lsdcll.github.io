@@ -76,7 +76,9 @@ GameStateManager.LoadNewLevel('Lvl0_0');
 
 const playerImage = new Image();
 const interactImage = new Image();
-playerImage.src ='./assets/player.png'
+const uiTestImg = new Image();
+uiTestImg.src = './assets/glorb-desc.png';
+playerImage.src ='./assets/player.png';
 interactImage.src = "./assets/interact.png";
 
 interact = new Sprite({
@@ -87,11 +89,15 @@ interact = new Sprite({
     image: interactImage,
     scale: 1,
     frames: 4,
-    });
-    
-
-
-
+});
+let uiTest = new Sprite({
+    pos: {
+        x: 0,
+        y: 0
+    },
+    image: uiTestImg,
+    scale: 1
+})
 
 let lastKey = '';
 
@@ -129,7 +135,7 @@ function render() {
     window.requestAnimationFrame(render);
 
     GameStateManager.currLevel.draw(player);
-    
+    uiTest.draw();
     //Collision Detection
     //Interactable Detection
     let doorCollision;

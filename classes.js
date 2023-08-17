@@ -232,6 +232,7 @@ class Level {
 
     }
 
+    //***FIX THIS SHIT*** */
     draw(player){
         this.background.draw();
         this.colliders.forEach(collider => {
